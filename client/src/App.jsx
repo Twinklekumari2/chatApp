@@ -6,8 +6,8 @@ import ProfilePage from './pages/ProfilePage'
 
 const App = () => {
   return (
-    // <div className="bg-[url('./src/assets/try.jpg')] bg-contain ">
-    <div className='min-h-screen bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white'>
+    <div className="bg-[url('./src/assets/bgImage.svg')] bg-contain text-amber-50">
+    {/* <div className='min-h-screen bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white'> */}
       <Routes>
         <Route path='/' element={<HomePage/>}/>
         <Route path='/login' element={<LoginPage/>}/>
