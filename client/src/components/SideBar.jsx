@@ -8,7 +8,7 @@ const SideBar = ({selectedUser,setSelectedUser}) => {
   return (
     <div className={`bg-[#8185B2]/10 h-full p-5 rounded-r-xl overflow-y-scroll text-white ${selectedUser ? "max-md:hidden" : ''}`}>
         <div className='pb-5'>
-            <div className='flex justify-between items-center'>
+            <div className='flex justify-between items-center pb-3'>
                 <img src={assets.logo} alt="logo" className='max-w-40' />
                 <div className='relative py-2 group'>
                     <img src={assets.menu_icon} alt="Menu" className='max-h-5 cursor-pointer'/>
@@ -17,9 +17,7 @@ const SideBar = ({selectedUser,setSelectedUser}) => {
                         <hr className='my-2 border-t broder-gray-500'/>
                         <p className='cursor-pointer text-sm'>LogOut</p>
                     </div>
-
                 </div>
-
             </div>
 
             <div className='rounded-full bg-[#282142] flex items-center gap-2 py-3 px-4 '>
