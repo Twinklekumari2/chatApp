@@ -69,9 +69,9 @@ export const chechAuth = (req,res) => {
 }
 
 //controller to update user profile details
-export const updateProfile = async (res,req) => {
+export const updateProfile = async (req,res) => {
     try{
-        const {profilePic,nio,fullName} = req.body;
+        const {profilePic,bio,fullName} = req.body;
         const userId = req.user._id;
         let updatedUser;
         if(!profilePic){
@@ -86,6 +86,4 @@ export const updateProfile = async (res,req) => {
     }catch(err){
         res.json({success:false,message:err.message});
     }
-
-
 }

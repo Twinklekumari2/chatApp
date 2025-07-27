@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import assets from '../assets/assets'
 import { useSearchParams } from 'react-router-dom'
+import { AuthContext } from "../../context/AuthContext"
 
 const LoginPage = () => {
 
@@ -11,13 +12,17 @@ const LoginPage = () => {
   const [bio,setBio] = useState("")
   const [isDataSubmitted,setIsDataSubmitted] = useState(false)
 
-  const onSubmitHandler = (event) => {
+  const { login } = useContext(AuthContext);
 
+  const onSubmitHandler = (event) => {
     event.preventDefault();
+
     if(currState === 'Sign up' && !isDataSubmitted){
       setIsDataSubmitted(true)
       return;
     }
+
+    login(currState==="Sign up" ? 'signup' : 'login' , {fullName,email,password,bio})
 
   }
   return (
