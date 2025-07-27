@@ -28,7 +28,7 @@ export const getUsersForSidebar = async (req,res) => {
     }
 }
 
-//get all message for selected user
+//get all message for selected user(by using id)
 export const getMessages = async (req,res) => {
     try{
         const {id: selectedUserId} = req.params;
@@ -77,7 +77,7 @@ export const sendMEssage = async (req,res) => {
         const newMessage = await Message.create({
             senderId,
             receiverId,
-            test,
+            text,
             image:imageUrl,
         });
         res.json({success:true,newMessage});
@@ -90,6 +90,8 @@ export const sendMEssage = async (req,res) => {
 
     }
     catch(err){
+        res.json({success:false, message:err.message
+        })
 
     }
 }
