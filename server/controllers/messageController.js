@@ -1,5 +1,7 @@
 import Message from "../models/Message.js";
 import cloudinary from "cloudinary"
+import User from "../models/User.js";
+import {io, userSocketMap} from "../server.js"
 
 //get all user excpet the logged in user
 export const getUsersForSidebar = async (req,res) => {
@@ -79,9 +81,12 @@ export const sendMEssage = async (req,res) => {
             image:imageUrl,
         });
         res.json({success:true,newMessage});
-        //now we want that the new message will display in realtime at screen for that we will use sockdt.io
         
-
+        //emit the nwe msg to the receivers socket
+        const receiverSocketId = userSocketMap[receiverId];
+        if(receiverSocketId){
+            io.to(receiverSocketId).emit("newMessage",newMessage)
+        }
 
     }
     catch(err){

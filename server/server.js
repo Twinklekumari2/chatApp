@@ -6,11 +6,40 @@ import http from "http";
 import { connectDB } from './lib/db.js';
 import userRouter from './routes/userRoutes.js';
 import messageRouter from './routes/messageRoutes.js';
+import { Server } from 'socket.io';
+import { log } from 'console';
 
 console.log("✅ MONGODB_URI from env:", process.env.DB_URL)
 //creating express app and http server
 const app = express();
 const server = http.createServer(app); //socket.io support this
+
+//initiallize socket.io server
+export const io = new Server(server, {
+    cors: {origin: "*"}
+})
+
+//store online users
+export const userSocketMap = {}; //{userId: socketId}
+
+//socket.io connection handler
+io.on("connection", (socket) =>{
+    const userId = socket.handshake.query.userId;
+    console.log("User Connected",userId)
+
+
+    //when the user is available then we will use socket map
+    if(userId) userSocketMap[userId] = socket.id;
+
+    //emit online users to all connected client
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+    socket.on("disconnect", () => {
+        console.log("User Disconnected", userId);
+        delete userSocketMap[userId];
+        io.emit("getOnlineUsers",Object.keys(userSocketMap));
+    })
+} )
 
 //middlewares
 app.use(express.json({limit: "4mb"}));
