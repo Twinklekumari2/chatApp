@@ -8,6 +8,7 @@ import userRouter from './routes/userRoutes.js';
 import messageRouter from './routes/messageRoutes.js';
 import { Server } from 'socket.io';
 import { log } from 'console';
+import exp from 'constants';
 
 console.log("✅ MONGODB_URI from env:", process.env.DB_URL)
 //creating express app and http server
@@ -53,7 +54,13 @@ app.use("/api/messages", messageRouter)
 //connect ot mongodb
 await connectDB();
 
-const PORT = process.env.PORT || 5000;
+if(process.env.NODE_ENV){
+     const PORT = process.env.PORT || 5000;
 server.listen(PORT,() => { 
     console.log("server is running on PORT: " + PORT);
 }) 
+}
+
+
+//export server for vercel
+export default server;
