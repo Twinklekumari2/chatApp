@@ -2,6 +2,7 @@ import Message from "../models/Message.js";
 import cloudinary from "cloudinary"
 import User from "../models/User.js";
 import {io, userSocketMap} from "../server.js"
+import mongoose from "mongoose";
 
 //get all user excpet the logged in user
 export const getUsersForSidebar = async (req,res) => {
@@ -49,18 +50,57 @@ export const getMessages = async (req,res) => {
 }
 
 //api to mark messages as seen using message id
-export const markMessageAsSeen = async (req,res) => {
-    try{
-        const id = req.params;
-        await Message.findByIdAndUpdate(id,{seen:true})
-        res.json({success:true});
+// export const markMessageAsSeen = async (req,res) => {
+//     try{
+//         const { id }= req.params;
+//         await Message.findByIdAndUpdate(id,{seen:true})
+//         res.json({success:true});
 
-    }catch(err){
-        console.log(err.message);
-        res.json({success:false,message:err.message});
+//     }catch(err){
+//         console.log(err.message);
+//         res.json({success:false,message:err.message});
 
+//     }
+// }
+
+// PUT /api/messages/mark/:id
+export const markMessageAsSeen = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ success: false, message: "Invalid message id" });
     }
-}
+
+    // (Optional but recommended) Only the recipient should be allowed to mark a message as seen
+    // assuming you have req.user.id from an auth middleware and your schema has receiverId
+    // const messageDoc = await Message.findById(id);
+    // if (!messageDoc) {
+    //   return res.status(404).json({ success: false, message: "Message not found" });
+    // }
+    // if (String(messageDoc.receiverId) !== String(req.user.id)) {
+    //   return res.status(403).json({ success: false, message: "Not allowed" });
+    // }
+
+    const updated = await Message.findByIdAndUpdate(
+      id,
+      { $set: { seen: true } },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: "Message not found" });
+    }
+
+    return res.json({ success: true, data: { _id: updated._id, seen: updated.seen } });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
+
 
 export const sendMEssage = async (req,res) => {
     try{
