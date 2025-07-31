@@ -7,6 +7,7 @@ import { connectDB } from './lib/db.js';
 import userRouter from './routes/userRoutes.js';
 import messageRouter from './routes/messageRoutes.js';
 import { Server } from 'socket.io';
+import User from './models/User.js';
 
 
 console.log("✅ MONGODB_URI from env:", process.env.DB_URL)

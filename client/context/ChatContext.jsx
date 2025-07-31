@@ -133,8 +133,14 @@ export const ChatProvider = ({ children }) => {
 
   // -------- API calls --------
   const getUser = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if(!token) return toast.error("Login First");
     try {
-      const { data } = await axios.get("/api/messages/users");
+      const { data } = await axios.get("/api/messages/users",{
+        headers:{
+          authorization: `Bearer ${token}`
+        }
+      });
       if (data?.success) {
         setUsers(data.users || []);
         setUnseenMessage(data.unseenMessage || {});
@@ -147,11 +153,18 @@ export const ChatProvider = ({ children }) => {
   const getMessages = useCallback(
     async (userId) => {
       if (!userId) return;
+      // const userToken = localStorage.getItem('jwtToken'); // Get token for each request
+      const userToken = localStorage.getItem("token")
+      if (!userToken) {
+          toast.error("Not authenticated. Please log in.");
+          // Optionally redirect to login
+          return;
+      }
       try {
         const { data } = await axios.get(`/api/messages/${userId}`);
-        if (data?.success) setMessages(data.messages || []);
+        if(data?.success) setMessages(data.message || []);
       } catch (err) {
-        toast.error(err?.message || "Failed to fetch messages");
+        toast.error(err?.messages || "Failed to fetch messages");
       }
     },
     [axios]
@@ -243,9 +256,15 @@ export const ChatProvider = ({ children }) => {
   }, [socket, handleNewMessage]);
 
   // Load users on mount
+  // useEffect(() => {
+  //   getUser();
+  // }, [getUser]);
   useEffect(() => {
+  if (localStorage.getItem("token")) {
     getUser();
-  }, [getUser]);
+  }
+}, [getUser]);
+
 
   // When selecting a user: fetch messages & clear badge & (optionally) mark-all seen
   useEffect(() => {
@@ -272,5 +291,10 @@ export const ChatProvider = ({ children }) => {
     markConversationSeen, // exposed if you want to call from Sidebar (optional)
   };
 
-  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
+  return (
+  <ChatContext.Provider value={value}>
+    {children}
+    </ChatContext.Provider>
+  )
+
 };

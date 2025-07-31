@@ -2,7 +2,7 @@ import { Children, createContext, use, useEffect, useState } from "react";
 import axios from "axios"
 import toast from "react-hot-toast";
 import {io} from "socket.io-client"
-import { data } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 axios.defaults.baseURL = backendUrl;
@@ -10,6 +10,7 @@ axios.defaults.baseURL = backendUrl;
 export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
+    const navigate = useNavigate();
     const [token, setToken] = useState(localStorage.getItem("token"));
     const [authUser, setAuthUser] = useState(null);
     const [onlineUser, setOnlineUser] = useState([]);
@@ -19,14 +20,26 @@ export const AuthProvider = ({children}) => {
 
     const checkAuth = async () => {
         try{
-            const {data} = await axios.get("/api/auth/check");
-            if(data.success){
+            const { data } = await axios.get("/api/auth/check",{
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
+            });
+            if(data?.success){
                 setAuthUser(data.user);
                 connectSocket(data.user);
             }
         }
         catch(err){
-            toast.error(err.message)
+            if(err.response && err.response.status === 401){
+                toast.error("Session Expired or unauthorized. Please log in.");
+                // navigate('/login');
+            }
+            else{
+                toast.error(err.message)
+
+            }
+            
 
         }
     }
@@ -56,7 +69,7 @@ export const AuthProvider = ({children}) => {
     }
 
     //logout funtion to handle user logout and socket disconnection
-    const logout = async => {
+    const logout = async () => {
         localStorage.removeItem("token");
         setToken(null);
         setAuthUser(null);
@@ -102,7 +115,7 @@ export const AuthProvider = ({children}) => {
 
     useEffect(() => {
         if(token){
-            axios.defaults.headers.common["token"] = token;
+            axios.defaults.headers.common["token"] = data.token;
         }
         checkAuth();
 
