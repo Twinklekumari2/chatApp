@@ -113,7 +113,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { AuthContext } from "./AuthContext";
-import toast from "react-hot-toast";
+import toast, { useToaster } from "react-hot-toast";
 
 export const ChatContext = createContext();
 
@@ -153,18 +153,22 @@ export const ChatProvider = ({ children }) => {
   const getMessages = useCallback(
     async (userId) => {
       if (!userId) return;
-      // const userToken = localStorage.getItem('jwtToken'); // Get token for each request
-      const userToken = localStorage.getItem("token")
+      const userToken = localStorage.getItem('token'); // Get token for each request
+      // const userToken = localStorage.getItem("token")
       if (!userToken) {
           toast.error("Not authenticated. Please log in.");
           // Optionally redirect to login
           return;
       }
       try {
-        const { data } = await axios.get(`/api/messages/${userId}`);
-        if(data?.success) setMessages(data.message || []);
+        const { data } = await axios.get(`/api/messages/${userId}`,{
+          headers:{
+            authorization: `Bearer ${userToken}`
+          }
+        });
+        if(data?.success) setMessages(data.messages || []);
       } catch (err) {
-        toast.error(err?.messages || "Failed to fetch messages");
+        toast.error(err?.response?.data?.message || "Failed to fetch messages");
       }
     },
     [axios]
@@ -176,8 +180,17 @@ export const ChatProvider = ({ children }) => {
         toast.error("No user selected.");
         return;
       }
+      const userToken = localStorage.getItem('token');
+      if (!userToken) {
+         toast.error("Not authenticated. Please log in.");
+      return;
+    }
       try {
-        const { data } = await axios.post(`/api/messages/send/${selectedUser._id}`, messageData);
+        const { data } = await axios.post(`/api/messages/send/${selectedUser._id}`, messageData,{
+          headers:{
+            authorization: `Bearer ${userToken}`
+          }
+        });
         if (data?.success) {
           setMessages((prev) => [...prev, data.newMessage]);
         } else {
