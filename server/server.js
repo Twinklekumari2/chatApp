@@ -7,8 +7,7 @@ import { connectDB } from './lib/db.js';
 import userRouter from './routes/userRoutes.js';
 import messageRouter from './routes/messageRoutes.js';
 import { Server } from 'socket.io';
-import { log } from 'console';
-import exp from 'constants';
+
 
 console.log("✅ MONGODB_URI from env:", process.env.DB_URL)
 //creating express app and http server

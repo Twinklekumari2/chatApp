@@ -4,9 +4,11 @@ import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 
 export const protectRoute = async (req,res,next) => {
+    const token = req.headers.token;
+    if(!token) return res.status(401).json({success:false, message: "Unauthorized"})
     try{
-        const token = req.headers.token;
-        const decoded = jwt.verify(token,process.env.JWT_SECRET)
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
         const user = await User.findById(decoded.userId).select("-password");
 
         if(!user) {
@@ -16,7 +18,7 @@ export const protectRoute = async (req,res,next) => {
         next();
     }
     catch(err){
-        res.json({success:false,message:err.message});
+        res.status(401).json({success:false,message:err.message});
     }
 
 }
