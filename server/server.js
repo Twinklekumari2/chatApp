@@ -45,7 +45,7 @@ io.on("connection", (socket) =>{
 //middlewares
 app.use(express.json({limit: "10mb"}));
 app.use(cors({
-  origin: ['https://chat-app-twbp.vercel.app'], // <-- Vercel domain
+  origin: ['https://chat-app-z3j4.vercel.app'], // <-- Vercel domain
   methods: ['GET','POST','PUT'],
 //   credentials: true,
 }));
