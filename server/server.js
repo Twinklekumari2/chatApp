@@ -43,8 +43,12 @@ io.on("connection", (socket) =>{
 } )
 
 //middlewares
-app.use(express.json({limit: "4mb"}));
-app.use(cors());
+app.use(express.json({limit: "10mb"}));
+app.use(cors({
+  origin: ['https://chat-app-twbp.vercel.app'], // <-- Vercel domain
+  methods: ['GET','POST','PUT'],
+//   credentials: true,
+}));
 
 //routes
 app.use("/api/status", (req,res)=>{res.send("server is live")})

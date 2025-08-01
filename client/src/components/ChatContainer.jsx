@@ -4,10 +4,10 @@ import { formatMessageTime } from '../lib/utils';
 import { ChatContext } from '../../context/ChatContext';
 import { AuthContext } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
-import { createRoutesFromChildren } from 'react-router-dom';
+import { createRoutesFromChildren, useNavigate } from 'react-router-dom';
 
 const ChatContainer = () => {
-
+    const navigate = useNavigate();
     const {selectedUser, setSelectedUser,messages, sendMessage, setMessages, getMessages} = useContext(ChatContext);
     const {authUser, onlineUser} = useContext(AuthContext);
     const scrollEnd = useRef();
@@ -50,16 +50,17 @@ const ChatContainer = () => {
     }
 
   return selectedUser ? (
-    <div className='h-full overflow-scroll relative backdrop-blur-lg'>
+    <div className='h-full max-full overflow-scroll relative backdrop-blur-lg p-2 sm:p-0'>
         {/* ------- header ------- */}
-      <div className='flex items-center gap-3 py-1 mx-4 border-b border-stone-500 fixed top-0 left-0 shadow-md z-50 w-full'>
-        <img src={selectedUser.profilePic || assets.avatar_icon} alt="" className='w-9 aspect-square rounded-full object-cover' />
+      <div className='flex items-center gap-3 py-3 mx-4 border-b border-stone-500'>
+        <img src={selectedUser.profilePic || assets.avatar_icon} alt="" className='w-9 rounded-full' />
         <p className='flex-1 text-lg text-white flex items-center gap-4'>
             {selectedUser.fullName}
             {onlineUser.includes(selectedUser._id) && <span className='w-2 h-2 rounded-full bg-green-500'></span>}
         </p>
         <img onClick={() => setSelectedUser(null)} src={assets.arrow_icon} className='md:hidden max-w-7' />
-        <img src={assets.help_icon} alt="" className='max-md:hidden max-w-5'/>
+        {/* <img src={assets.help_icon} alt="" className='max-md:hidden max-w-5'/> */}
+        <img src={assets.help_icon} alt="Help" className=" w-5 h-5 cursor-pointer"/>
       </div>
       {/* --------- chat area ------- */}
       <div className='flex flex-col h-[calc(100%-120px)] overflow-y-scroll p-3 pb-6'>
