@@ -4,8 +4,8 @@ import toast from "react-hot-toast";
 import {io} from "socket.io-client"
 import { data, useNavigate } from "react-router-dom";
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
-axios.defaults.baseURL = backendUrl;
+const backendUrl=import.meta.env.VITE_BACKEND_URL;
+axios.defaults.baseURL=backendUrl;
 
 export const AuthContext = createContext();
 
@@ -81,8 +81,17 @@ export const AuthProvider = ({children}) => {
 
     // proupdatefile fucntion to handle user profile updates
      const updateProfile = async (body) => {
+        const userToken = localStorage.getItem('token');
+        if(!userToken){
+            toast.error("Not authenticated. please log in");
+            return;
+        }
         try{
-            const {data}= await axios.put("api/auth/update-profile", body);
+            const {data}= await axios.put("/api/auth/update-profile", body,{
+                headers:{
+                    Authorization: `Bearer ${userToken}`
+                }
+            });
             if(data.success){
                 setAuthUser(data.user);
                 toast.success("Profile updates Successfully");
